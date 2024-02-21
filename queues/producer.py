@@ -1,23 +1,38 @@
-# Convertir en un flask para poder publicar un EP donde envien eventos
-
+from flask import Flask, jsonify, request
 import pika
 
-connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
+app = Flask(__name__)
 
-notifications_channel = connection.channel()
-monitor_channel = connection.channel()
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    try:
+        # Get the message from the POST request data
+        message = request.get_data(as_text=True)
 
-notifications_channel.queue_declare(queue="notifications_queue")
-monitor_channel.queue_declare(queue="monitor_queue")
+        # Establish RabbitMQ connection
+        # connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq-3.onrender.com")) 
+        connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
+        notifications_channel = connection.channel()
+        monitor_channel = connection.channel()
 
+        # Declare queues
+        notifications_channel.queue_declare(queue="notifications_queue")
+        monitor_channel.queue_declare(queue="monitor_queue")
 
-message = "Hello RabbitMQ!"
+        # Publish the message to queues
+        notifications_channel.basic_publish(
+            exchange="", routing_key="notifications_queue", body=message
+        )
+        monitor_channel.basic_publish(exchange="", routing_key="monitor_queue", body=message)
 
-notifications_channel.basic_publish(
-    exchange="", routing_key="notifications_queue", body=message
-)
-monitor_channel.basic_publish(exchange="", routing_key="monitor_queue", body=message)
+        print(f" [x] Sent '{message}'")
 
-print(f" [x] Sent '{message}'")
+        # Close the RabbitMQ connection
+        connection.close()
 
-connection.close()
+        return jsonify({"status": "success", "message": f"Message '{message}' sent successfully"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+if __name__ == '__main__':
+    app.run(debug=True)

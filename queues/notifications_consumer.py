@@ -1,7 +1,10 @@
 import pika
-
-
+import requests
+import json
 def callback(ch, method, properties, body):
+    dictToSend={"tipo_notificacion": "EVENTOS", "titulo": "Mucha lluvia en carretera", "descripcion": "Ten cuidado al estar montando cicla"}
+    res = requests.post('http://localhost:8000/notificaciones', data=json.dumps(dictToSend), headers={'Content-Type': 'application/json'})
+    print ('response from server:',res.text)
     print(f" [x] Received {body}")
 
 

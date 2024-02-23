@@ -23,8 +23,6 @@ def send_message():
        
         print(f" [x] Sent '{message}' to {queue}")
 
-        # Close the RabbitMQ connection
-        connection.close()
 
         return jsonify({"status": "success", "message": f"Message '{message}' sent successfully to '{queue}'"})
     except Exception as e:
@@ -32,13 +30,17 @@ def send_message():
 
 if __name__ == '__main__':
      # Establish RabbitMQ connection
-    # connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq-3.onrender.com")) 
-    connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
-    notifications_channel = connection.channel()
-    monitor_channel = connection.channel()
+    try:
+        # connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq-3.onrender.com")) 
+        connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
+        notifications_channel = connection.channel()
+        monitor_channel = connection.channel()
 
-    # Declare queues
-    notifications_channel.queue_declare(queue="notifications_queue")
-    monitor_channel.queue_declare(queue="monitor_queue")
+        # Declare queues
+        notifications_channel.queue_declare(queue="notifications_queue")
+        monitor_channel.queue_declare(queue="monitor_queue")
 
-    app.run(debug=True)
+        app.run(debug=True)
+    except KeyboardInterrupt:
+        # Close the RabbitMQ connection
+        connection.close()

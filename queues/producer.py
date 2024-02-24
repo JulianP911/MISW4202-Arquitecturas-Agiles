@@ -8,15 +8,15 @@ def send_message():
     try:
           # Get the JSON data from the POST request
         data = request.get_json()
-
         # Extract message and queue from the JSON data
         message = data.get("message", "")
         queue = data.get("queue", "")
-
         # Publish the message to the specified queue
         if queue == "notifications":
+            print("peticion de notifications")
             notifications_channel.basic_publish(exchange="", routing_key="notifications_queue", body=message)
         elif queue == "monitor":
+            print("peticion de monitor")
             monitor_channel.basic_publish(exchange="", routing_key="monitor_queue", body=message)
         else:
             raise ValueError(f"Invalid queue name: {queue}")

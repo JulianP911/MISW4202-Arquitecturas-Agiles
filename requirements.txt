@@ -1,4 +1,0 @@
-pika
-flask
-requests
-jsonify

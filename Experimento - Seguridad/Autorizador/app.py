@@ -2,10 +2,13 @@ from flask import Flask, jsonify, request
 import random
 import jwt
 from datetime import datetime, timedelta
+import requests
+import bcrypt
 
 app = Flask(__name__)
+correct_password = 'password123'
+correct_password_hash = bcrypt.hashpw(correct_password.encode('utf-8'), bcrypt.gensalt())
 
-correct_password_hash = 'password123'
 generated_otp = None
 token_secret = 'your_secret_key'
 
@@ -24,9 +27,13 @@ def login():
 
     data = request.get_json()
     provided_password = data.get('password')
+     # Call register endpoint to get the hash of the registered password
+    #response = requests.get('http://')  # Replace with the actual registration service URL
+    #correct_password_hash = response.json().get('password_hash')
 
-    if not provided_password or provided_password != correct_password_hash:
-        return jsonify({'error': 'Invalid password'}), 401 
+  
+    if not provided_password or not bcrypt.checkpw(provided_password.encode('utf-8'), correct_password_hash):
+        return jsonify({'error': 'Invalid password'}), 401
     else:
         generated_otp = generate_otp()
         print(f'Generated OTP: {generated_otp}')

@@ -31,13 +31,11 @@ def login():
     #response = requests.get('http://')  # Replace with the actual registration service URL
     #correct_password_hash = response.json().get('password_hash')
 
-  
     if not provided_password or not bcrypt.checkpw(provided_password.encode('utf-8'), correct_password_hash):
         return jsonify({'error': 'Invalid password'}), 401
     else:
         generated_otp = generate_otp()
-        print(f'Generated OTP: {generated_otp}')
-        return jsonify({'message': 'OTP generated successfully'}), 200
+        return jsonify({'message': 'OTP generated successfully', 'otp':generated_otp}), 200
 
 @app.route('/verify_otp', methods=['POST'])
 def verify_otp():

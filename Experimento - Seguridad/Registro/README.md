@@ -33,6 +33,9 @@ Este es un microservicio que implementa un sistema de registro y autenticación 
 
 - **Autenticación de usuario**: `POST /autenticacion`
     - Permite autenticar a un usuario enviado un JSON con el nombre de usuario y la contraseña, devolviendo un booleano indicando si la autenticación fue exitosa.
+- 
+- **Obtener hash de contraseña**: `GET /hash_contraseña`
+    - Permite obtener el hash de la contraseña de un usuario enviando el nombre de usuario como parámetro de consulta en la URL.
 
 ## Ejemplo de solicitud
 
@@ -45,3 +48,9 @@ curl -X POST -H "Content-Type: application/json" -d '{"username": "usuario", "pa
 
 ```bash
 curl -X POST -H "Content-Type: application/json" -d '{"username": "usuario", "password": "contraseña"}' http://127.0.0.1:5000/autenticacion
+```
+### Obtener el hash de la contraseña
+
+```bash
+curl -X GET 'http://127.0.0.1:5000/hash_contraseña?username=usuario'
+```

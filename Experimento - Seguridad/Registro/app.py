@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
-import os
+import hashlib
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'  # Usamos SQLite como base de datos
@@ -52,6 +52,23 @@ def autenticar_usuario():
         return jsonify({'autenticado': True}), 200
     else:
         return jsonify({'autenticado': False}), 401
+
+
+
+@app.route('/hash_contraseña', methods=['GET'])
+def hash_contraseña():
+    username = request.args.get('username')
+
+    if not username :
+        return jsonify({'error': 'Se requiere nombre de usuario'}), 400
+
+    usuario = User.query.filter_by(username=username).first()
+    if usuario:
+        hash_password = hashlib.sha256(usuario.password.encode()).hexdigest()
+        return jsonify({'hash_contraseña': hash_password}), 200
+    else:
+        return jsonify({'error': 'Usuario no encontrado'}), 404
+
 
 
 if __name__ == '__main__':

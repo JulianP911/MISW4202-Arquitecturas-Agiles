@@ -1,6 +1,6 @@
 # Flask SQLAlchemy User Authentication
 
-Este es un proyecto de ejemplo que implementa un sistema de registro y autenticación de usuarios utilizando Flask y SQLAlchemy.
+Este es un microservicio que implementa un sistema de registro y autenticación de usuarios utilizando Flask y SQLAlchemy.
 
 ## Requisitos
 

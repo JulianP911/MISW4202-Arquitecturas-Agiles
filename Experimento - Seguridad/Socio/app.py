@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from marshmallow import fields
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 import requests
+import json
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = (
@@ -55,7 +56,11 @@ deportista_schema = DeportistaSchema()
 def registro_usuario():
     # Validar que el token sea válido para acceder a la información
     token = request.json["token"]
-    response = requests.post("http://127.0.0.1:5000/verify_token", {"token": token})
+    response = requests.post(
+        "http://127.0.0.1:5000/verify_token",
+        json=json.dumps({"token": token}),
+        headers={"Content-Type": "application/json"},
+    )
     if response.status_code == 401 or response.status_code == 403:
         return jsonify({"error": "Unauthorized to access data atheletes"}), 401
     else:

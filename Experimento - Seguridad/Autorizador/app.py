@@ -4,6 +4,7 @@ import jwt
 from datetime import datetime, timedelta
 import requests
 import bcrypt
+import json
 
 app = Flask(__name__)
 # correct_password = 'password123'
@@ -76,7 +77,7 @@ def verify_otp():
 @app.route("/verify_token", methods=["POST"])
 def verify_token():
     data = request.get_json()
-    provided_token = data.get("token")
+    provided_token = json.loads(data).get("token")
 
     try:
         decoded_payload = jwt.decode(provided_token, token_secret, algorithms=["HS256"])

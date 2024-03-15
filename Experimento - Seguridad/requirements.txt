@@ -1,6 +1,5 @@
 flask
 SQLAlchemy
 requests
-jwt
 bcrypt
 PyJWT

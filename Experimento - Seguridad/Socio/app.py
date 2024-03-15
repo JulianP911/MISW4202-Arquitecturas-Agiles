@@ -6,18 +6,23 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 import requests
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///socios.db'  # Usamos SQLite como base de datos
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SQLALCHEMY_DATABASE_URI"] = (
+    "sqlite:///socios.db"  # Usamos SQLite como base de datos
+)
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
+
 
 @app.before_request
 def create_tables():
     db.create_all()
 
+
 class Sexo(enum.Enum):
-    MASCULINO = 'MASCULINO'
-    FEMENINO = 'FEMENINO'
-    OTRO = 'OTRO'
+    MASCULINO = "MASCULINO"
+    FEMENINO = "FEMENINO"
+    OTRO = "OTRO"
+
 
 # Definición del modelo de deportistas
 class Deportista(db.Model):
@@ -32,25 +37,30 @@ class Deportista(db.Model):
     peso = db.Column(db.Float, nullable=False)
     condiciones_medicas = db.Column(db.String(512), nullable=False)
 
+
 # Definición del esquema de deportistas
 class DeportistaSchema(SQLAlchemyAutoSchema):
     sexo = fields.Enum(Sexo, by_value=True)
+
     class Meta:
         model = Deportista
         load_instance = True
 
+
 deportista_schema = DeportistaSchema()
 
+
 # Endpoint para obtener los deportistas que tiene a cargo un socio deportologo
-@app.route('/deportistas', methods=['POST'])
+@app.route("/deportistas", methods=["POST"])
 def registro_usuario():
     # Validar que el token sea válido para acceder a la información
-    token = request.json['token']
-    response = requests.post('http://localhost:5000/verify_token', token)
+    token = request.json["token"]
+    response = requests.post("http://127.0.0.1:5000/verify_token", {"token": token})
     if response.status_code == 401 or response.status_code == 403:
-        return jsonify({'error': 'Unauthorized to access data atheletes'}), 401
+        return jsonify({"error": "Unauthorized to access data atheletes"}), 401
     else:
         return [deportista_schema.dump(regla) for regla in Deportista.query.all()], 200
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(debug=True)
